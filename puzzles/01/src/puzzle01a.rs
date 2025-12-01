@@ -12,6 +12,7 @@ impl PuzzlePart for Puzzle01a {
     fn solve(input: &str) -> String {
         let mut position = 50;
         let mut zero_hits = 0;
+
         input.lines().map(DialRotation::parse).for_each(|rot| {
             let sign = match rot.dir {
                 crate::Dir::Right => 1,
