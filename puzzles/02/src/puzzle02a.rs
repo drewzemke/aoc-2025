@@ -1,6 +1,6 @@
 use common::puzzle::PuzzlePart;
 
-use crate::{parse, sum_invalid_ids};
+use crate::{parse, sum_invalid_ids_a};
 
 pub struct Puzzle02a {}
 
@@ -12,7 +12,7 @@ impl PuzzlePart for Puzzle02a {
     fn solve(input: &str) -> String {
         parse(input)
             .into_iter()
-            .map(sum_invalid_ids)
+            .map(sum_invalid_ids_a)
             .sum::<u64>()
             .to_string()
     }

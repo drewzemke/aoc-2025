@@ -17,7 +17,7 @@ pub fn parse(input: &str) -> Vec<Interval> {
 }
 
 // invalid ids are products of 11, 101, 1001, that don't have leading zeros
-pub fn sum_invalid_ids(interval: Interval) -> u64 {
+pub fn sum_invalid_ids_a(interval: Interval) -> u64 {
     let mut sum = 0;
 
     // 11, 101, 1001, ...
@@ -52,6 +52,64 @@ pub fn sum_invalid_ids(interval: Interval) -> u64 {
             * base;
 
         sum += sum_of_mults;
+    }
+
+    sum
+}
+
+// invalid ids are products of 11, 111, 1111,... 101, 10101, 10101... 1001, 1001001, 1001001001,... that don't have leading zeros
+pub fn sum_invalid_ids_b(interval: Interval) -> u64 {
+    let mut sum = 0;
+
+    let start = *interval.start();
+    let end = *interval.end();
+
+    // caching the ids we've seen just as fast using a vec than a hashset or btreeset,
+    // probably because each individual interval doesn't have too many ids in it
+    let mut ids = Vec::new();
+
+    let mut og_bases = (1..).map(|p| 10u64.pow(p) + 1);
+
+    while let Some(og_base) = og_bases.next()
+        && og_base < end
+    {
+        let mut base = og_base;
+        // to get from an og base (11, 101, 1010) to the next one in its family,
+        // multiply by (10, 100, 1000) and add 1
+        // eg. 11 -> 111 -> 1111
+        //     101 -> 10101 -> 1010101
+
+        while base < end {
+            // to avoid leading zeros, computer the smallest and largest legal mults for this base
+            let lower_threshold = (og_base - 1) / 10;
+            let upper_threshold = og_base - 2;
+
+            // find the smallest mult greater or equal to than the lower bound,
+            // and the largets mult less than or equal to the upper bound
+            let smallest_mult = start.div_ceil(base).max(lower_threshold);
+            let largest_mult = end.div_euclid(base).min(upper_threshold);
+
+            if smallest_mult > largest_mult
+                || smallest_mult * base < start
+                || largest_mult * base > end
+            {
+                base = base * (og_base - 1) + 1;
+                continue;
+            }
+
+            // go mult by mult and check if we've seen them already,
+            // and if not, add them to the sum
+            for mult in smallest_mult..=largest_mult {
+                let id = mult * base;
+
+                if !ids.contains(&id) {
+                    sum += id;
+                    ids.push(id);
+                }
+            }
+
+            base = base * (og_base - 1) + 1;
+        }
     }
 
     sum
