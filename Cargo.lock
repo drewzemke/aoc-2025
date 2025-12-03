@@ -206,6 +206,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "puzzle03"
+version = "0.1.0"
+dependencies = [
+ "common",
+ "itertools",
+ "nom",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
