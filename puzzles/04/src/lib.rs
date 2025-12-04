@@ -53,4 +53,20 @@ impl PaperRollGrid {
 
         Grid(rows)
     }
+
+    pub fn remove_accessible_rolls(&mut self) -> usize {
+        let mut removed = 0;
+
+        // go through and update this grid by clearing cells that are accessible
+        for (row_idx, row) in self.accessible_rolls().rows().enumerate() {
+            for (col_idx, accessible) in row.enumerate() {
+                if accessible {
+                    self.put(Tile::Nothing, (row_idx as i64, col_idx as i64).into());
+                    removed += 1;
+                }
+            }
+        }
+
+        removed
+    }
 }
