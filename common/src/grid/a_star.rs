@@ -1,5 +1,5 @@
 use super::Grid;
-use crate::{dir::Dir, point::Point};
+use crate::{dir::Dir4, point::Point};
 use std::collections::{BinaryHeap, HashMap, HashSet};
 
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -65,7 +65,7 @@ impl<T> Grid<T> {
 
             let current_g = g_scores[&pt];
 
-            for dir in Dir::all() {
+            for dir in Dir4::all() {
                 let neighbor = pt + dir.step();
 
                 if !self.at(neighbor).is_some_and(&is_space) {

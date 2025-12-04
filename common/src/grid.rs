@@ -27,6 +27,16 @@ macro_rules! grid_def {
                 &mut self.0
             }
         }
+
+        impl $grid_name {
+            pub fn parse(input: &str) -> Self
+            where
+                $tile_type: From<char>,
+            {
+                let inner = common::grid::Grid::parse(input);
+                Self(inner)
+            }
+        }
     };
 }
 
