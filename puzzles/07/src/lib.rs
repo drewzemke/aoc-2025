@@ -1,4 +1,6 @@
-use common::grid_def;
+use std::collections::HashMap;
+
+use common::{grid_def, point::Point};
 
 pub mod puzzle07a;
 pub mod puzzle07b;
@@ -52,5 +54,42 @@ impl Diagram {
         }
 
         splits
+    }
+
+    pub fn count_beam_timelines(&self) -> usize {
+        let start_pos = self.find_pt(|t| matches!(t, Tile::Start)).unwrap();
+        let mut memo = HashMap::new();
+
+        self.count_timelines_from(start_pos, &mut memo)
+    }
+
+    fn count_timelines_from(&self, pt: Point, memo: &mut HashMap<Point, usize>) -> usize {
+        // check the memo
+        if let Some(val) = memo.get(&pt) {
+            return *val;
+        }
+
+        // base case: we're at the bottom and can't split further
+        if (pt.row as usize) >= self.height() - 2 {
+            return 1;
+        }
+
+        // look two rows down to see if we'll split
+        let val = if let Some(tile) = self.at((pt.row + 2, pt.col).into())
+            && matches!(tile, Tile::Splitter)
+        {
+            // split there into left and right, compute the number of paths for each
+            // of those, then add them together
+            let left = self.count_timelines_from((pt.row + 2, pt.col - 1).into(), memo);
+            let right = self.count_timelines_from((pt.row + 2, pt.col + 1).into(), memo);
+
+            left + right
+        } else {
+            // if there's no splitter, continue checking downwards
+            self.count_timelines_from((pt.row + 2, pt.col).into(), memo)
+        };
+
+        memo.insert(pt, val);
+        val
     }
 }
