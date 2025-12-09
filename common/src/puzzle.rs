@@ -30,7 +30,17 @@ pub trait PuzzlePart {
 
     /// Do all of the work necessary to transform the input text into
     /// the solution text.
-    fn solve(input: &str) -> String;
+    fn solve(_input: &str) -> String {
+        "Unsolved!".into()
+    }
+
+    /// Do all of the work necessary to transform the input text into
+    /// the solution text.
+    ///
+    /// Provides an input flag indicating if the puzzle is using the example input or not.
+    fn solve_with_context(input: &str, _is_example: bool) -> String {
+        Self::solve(input)
+    }
 }
 
 pub trait Puzzle {
@@ -62,7 +72,7 @@ pub trait Puzzle {
         print_puzzle_info::<P>(Self::name(), part_name, is_example);
 
         let start_time = Instant::now();
-        let solution = <P as PuzzlePart>::solve(input);
+        let solution = <P as PuzzlePart>::solve_with_context(input, is_example);
         let duration = start_time.elapsed();
 
         print_results(&solution, duration);
