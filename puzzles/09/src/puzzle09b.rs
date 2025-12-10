@@ -1,13 +1,17 @@
 use common::puzzle::PuzzlePart;
 
+use crate::PointList;
+
 pub struct Puzzle09b {}
 
 impl PuzzlePart for Puzzle09b {
     fn description() -> &'static str {
-        "Puzzle 09 Part B"
+        "Find the area of the largest rectangle that can be formed within a filled-in section of tiles."
     }
 
-    fn solve(_input: &str) -> String {
-        "Unsolved!".into()
+    fn solve(input: &str) -> String {
+        let points = PointList::parse(input);
+        // dbg!(points);
+        points.max_area_restricted().to_string()
     }
 }

@@ -14,6 +14,16 @@ impl Point {
     pub fn new(row: i64, col: i64) -> Self {
         Self { row, col }
     }
+
+    #[inline]
+    pub fn x(&self) -> i64 {
+        self.row
+    }
+
+    #[inline]
+    pub fn y(&self) -> i64 {
+        self.col
+    }
 }
 
 impl From<(i64, i64)> for Point {
