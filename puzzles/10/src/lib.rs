@@ -1,3 +1,5 @@
+use good_lp::*;
+
 pub mod puzzle10a;
 pub mod puzzle10b;
 
@@ -6,7 +8,6 @@ pub struct Machine {
     num_lights: usize,
     light_target: Vec<bool>,
     buttons: Vec<Vec<bool>>,
-    #[expect(dead_code)]
     joltage_requirements: Vec<usize>,
 }
 
@@ -172,6 +173,43 @@ impl Machine {
             })
             .min_by_key(|v| v.iter().filter(|b| **b).count())
             .unwrap()
+    }
+
+    // I tried soooo goddamned hard to solve this without just handing it to
+    // a library, but I couldn't get something to work and eventually wanted
+    // to move on. Sadness.
+    fn min_z_soln(&self) -> Vec<usize> {
+        let mut vars = variables!();
+
+        let buttons = self
+            .buttons
+            .iter()
+            .map(|_| vars.add(variable().integer().min(0)))
+            .collect::<Vec<_>>();
+
+        let objective = buttons.iter().sum::<Expression>();
+
+        let mut problem = vars.minimise(objective).using(default_solver);
+
+        for row in 0..self.num_lights {
+            let constraint = buttons
+                .iter()
+                .enumerate()
+                .map(|(col, var)| {
+                    let coeff = if self.buttons[col][row] { 1 } else { 0 };
+                    coeff * *var
+                })
+                .sum::<Expression>()
+                .eq(self.joltage_requirements[row] as u32);
+            problem = problem.with(constraint);
+        }
+
+        let solution = problem.solve().unwrap();
+
+        buttons
+            .iter()
+            .map(|var| solution.value(*var) as usize)
+            .collect()
     }
 }
 
